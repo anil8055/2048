@@ -49,6 +49,22 @@ pipeline {
         dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
       }
     }
+    stage("Docker Build & Push") {
+      steps {
+        script {
+          withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+            sh "docker build -t 2048 ."
+            sh "docker tag 2048 jenkinsgame:latest "
+            sh "docker push jenkinsgame:latest "
+          }
+        }
+      }
+    }
+    stage("TRIVY") {
+      steps {
+        sh "trivy image jenkinsgame:latest > trivy.txt"
+      }
+    }
     stage('TRIVY FS SCAN') {
       steps {
         sh "trivy fs . > trivyfs.txt"

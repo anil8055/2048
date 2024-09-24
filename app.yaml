@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sevenajay/2048
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: ab
+    spec:
+      containers:
+        - name: sevenajay/2048
+          image: sevenajay/2048:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "yes"
+  selector:
+    matchLabels:
+      app: ab

@@ -23,8 +23,7 @@ pipeline {
         withSonarQubeEnv('sonar-server') {
           sh ''
           ' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Game \
-                    -Dsonar.projectKey=Game '
-          ''
+                    -Dsonar.projectKey=Game '''
         }
       }
     }

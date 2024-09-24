@@ -53,15 +53,15 @@ pipeline {
         script {
           withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
             sh "docker build -t 2048 ."
-            sh "docker tag 2048 jenkinsgame:latest "
-            sh "docker push jenkinsgame:latest "
+            sh "docker tag 2048 jenkinsgame1:latest "
+            sh "docker push jenkinsgame1:latest "
           }
         }
       }
     }
     stage("TRIVY") {
       steps {
-        sh "trivy image jenkinsgame:latest > trivy.txt"
+        sh "trivy image jenkinsgame1:latest > trivy.txt"
       }
     }
     stage('TRIVY FS SCAN') {

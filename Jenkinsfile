@@ -71,7 +71,7 @@ pipeline{
           // some block
           sh 'kubectl apply -f app.yaml'
           sh 'kubectl apply -f app-service.yaml'
-          sh 'kubectl rollout restart deployment app'
+          sh 'kubectl rollout restart deployment rapidgenius-2048'
         }
       }
     }

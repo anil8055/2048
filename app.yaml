@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rapidgenius/2048
+  name: rapidgenius-2048
 spec:
   replicas: 2
   template:

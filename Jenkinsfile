@@ -65,16 +65,31 @@ pipeline{
                 sh "trivy image rapidgenius/2048:latest > trivy.txt"
             }
         }
-        stage('DeployToProduction') {
-      steps {
+       stage('DeployToProduction') {
+    steps {
         kubeconfig(caCertificate: 'MIIDBjCCAe6gAwIBAgIBATANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwptaW5pa3ViZUNBMB4XDTI0MDkyMjE0NDQ1OVoXDTM0MDkyMTE0NDQ1OVowFTETMBEGA1UEAxMKbWluaWt1YmVDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJ+IYVfa84PbhYVU2XF2jyodmAwvcLC3gvCNAztt+94Psuno7WiTlTGZm6Bhllb49E4HjL62wgKwfi29D0Fl2N4tr3Rktq4an8bmAK01mw6iDm5S7gitu/vmpD/r0TSfzFW8vbd48vDA2KtNThJDdoCYfHT6dozD0XM6H9ujhcrJE7mABfIW7C4vE/CTTmhiZ2FbVI33vKBr4GTqWONnQhqaMczGpoDvoYO5lxP+UigAbqdZnLOJM2DZc7Q793kddhL2K0SiioY+oMbKsP+2KqL+MJqFuzNmc5VP10sOc7gDj/cjC+yOGPBQrpqdV5MJ/PqLXhpxWQzeZrCYP7HFZM0CAwEAAaNhMF8wDgYDVR0PAQH/BAQDAgKkMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBRSGB2RCw7zNj5jAxdPO4IdWOligjANBgkqhkiG9w0BAQsFAAOCAQEAJ2sU9+/m0aDAwqg0ziWU1nPZDVsOo8mOIv0uT55L3eqXFjfaYw79H9OBTm8zZTIsoCqkMc9/eFVgLoMUDn11NtYu6nx/YuRXQpW6FNQPUt+DeRVRw9d3bSVFD8M1EYVakxmpE8VSm5wEy6qazLLlF8GxJnyvfZpd2n7GWD94ntu0EOXhHFN+uFvoa37Ws8jloU/dtGTN0NS4oAf/2c1bsa/fgJb6zLKIQgxX6dRZqEv/1D+RDZFC3OkC3itewf9QC8hXdJAnhp7SFDVgj9/3nfKGrS5NMB4IIjVhCJgD6vY+77GMOOWwE77zeIqriV3U05RdQfr9CxjfjMFMJcDUjw==', credentialsId: 'ac4c6002-37d8-4172-bff2-232ab87dbf76', serverUrl: 'https://192.168.49.2:8443') {
-          // some block
-          sh 'kubectl apply -f app.yaml'
-          sh 'kubectl apply -f app-service.yaml'
-          sh 'kubectl rollout restart deployment rapidgenius-2048'
-          sh 'kubectl port-forward service/node-app-service 3000:3000'
+            // Apply the manifests
+            sh 'kubectl apply -f app.yaml'
+            sh 'kubectl apply -f app-service.yaml'
+            sh 'kubectl rollout restart deployment rapidgenius-2048'
+
+            // Wait for the pod to be ready
+            script {
+                def podReady = false
+                timeout(time: 5, unit: 'MINUTES') { // Set a timeout to avoid indefinite waiting
+                    while (!podReady) {
+                        sleep(10) // Wait for 10 seconds before checking again
+                        podReady = sh(script: 'kubectl get pods -l app=ab -o jsonpath="{.items[0].status.phase}"', returnStdout: true).trim() == 'Running'
+                        echo "Current pod status: ${podReady ? 'Running' : 'Not Running'}"
+                    }
+                }
+            }
+
+            // Port forward once the pod is ready
+            sh 'kubectl port-forward service/node-app-service 3000:3000'
         }
-      }
     }
+}
+
     }
 }

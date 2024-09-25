@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sevenajay/2048
+  name: rapidgenius/2048
 spec:
   replicas: 2
   template:
@@ -10,8 +10,8 @@ spec:
         app: ab
     spec:
       containers:
-        - name: sevenajay/2048
-          image: sevenajay/2048:latest
+        - name: rapidgenius/2048
+          image: rapidgenius/2048:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

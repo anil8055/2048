@@ -54,15 +54,15 @@ pipeline{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
                        sh "docker build -t 2048 ."
-                       sh "docker tag 2048 sevenajay/2048:latest "
-                       sh "docker push sevenajay/2048:latest "
+                       sh "docker tag 2048 rapidgenius/2048:latest "
+                       sh "docker push rapidgenius/2048:latest "
                     }
                 }
             }
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image sevenajay/2048:latest > trivy.txt"
+                sh "trivy image rapidgenius/2048:latest > trivy.txt"
             }
         }
         stage('DeployToProduction') {

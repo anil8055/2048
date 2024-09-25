@@ -10,7 +10,7 @@ spec:
         app: ab
     spec:
       containers:
-        - name: rapidgenius/2048
+        - name: rapidgenius-2048
           image: rapidgenius/2048:latest
           imagePullPolicy: Always
           ports:

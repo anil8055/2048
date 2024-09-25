@@ -72,6 +72,7 @@ pipeline{
           sh 'kubectl apply -f app.yaml'
           sh 'kubectl apply -f app-service.yaml'
           sh 'kubectl rollout restart deployment rapidgenius-2048'
+          sh 'kubectl port-forward service/node-app-service 3000:3000'
         }
       }
     }
